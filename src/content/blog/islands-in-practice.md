@@ -1,15 +1,15 @@
 ---
-title: "Islands architecture in practice"
-description: "How one React component on an otherwise static page gets hydrated, what the client directives mean, and how to keep islands small."
+title: "One island, and what it taught me about the rest of the page"
+description: "The blog index on this site has a React search box and nothing else that runs in the browser. Here's how that works and what to watch for."
 pubDate: 2026-10-28
 tags: [astro, islands, react, performance]
 ---
 
-The blog index on this site has a search box. It filters posts as you type, so it needs JavaScript. Nothing else on the page does. Islands architecture is the pattern that lets the search box have its JavaScript without the header, footer and post cards paying for it.
+The blog index on this site has a search box. It filters posts as you type, so it needs JavaScript. Nothing else on that page does. Islands architecture is the pattern that lets the search box have its JavaScript without the header, the footer and the post cards paying for it, and until I built one I didn't fully believe it was that simple.
 
-## What happens at build time
+## What happens when you build
 
-The component is ordinary React:
+The component is ordinary React. I didn't change anything about how I'd write it elsewhere:
 
 ```tsx
 // src/components/PostSearch.tsx
@@ -25,40 +25,34 @@ export default function PostSearch({ posts }: Props) {
 }
 ```
 
-The page includes it with a directive:
+The page drops it in with one directive:
 
 ```astro
 <PostSearch client:load posts={searchable} />
 ```
 
-During `astro build`, Astro renders the component to HTML on the server, so the initial page already contains the input and the full list of posts. It then emits a small script for this component and a serialised copy of its props, wrapped in an `<astro-island>` custom element. In the browser, that element loads React and the component, and hydrates the markup in place. Search works a moment later; everything else on the page never changes.
+When `astro build` runs, Astro renders the component to HTML on the server, so the page already contains the input and the full list of posts before any script loads. Then it emits a small script for this one component, serialises its props, and wraps the HTML in an `<astro-island>` element. In the browser that element loads React and the component and hydrates the markup in place. Search starts working a beat after the page appears. Nothing around it changes.
 
-Remove `client:load` and the same component still renders, but as inert HTML, with no script and no React in the bundle. That is the default for every framework component in Astro.
+Delete `client:load` and the component still renders, as HTML, with no script and no React anywhere in the bundle. That's the default for every framework component in Astro, and it took me a while to stop expecting the framework to show up uninvited.
 
-## Choosing a directive
+## Picking the directive
 
-The directive is a loading strategy, and the choice is about priority:
+The directive is a loading priority, and I've settled on a habit. `client:load` for anything the visitor will touch immediately; the search box is at the top of the page so it gets this. `client:idle` for things that can wait a moment, like the theme picker in the header on this site, which nobody needs in the first hundred milliseconds. `client:visible` for anything below the fold. A comments widget at the bottom of a post has no business loading before someone scrolls there, and it takes a `rootMargin` if you want it to start a bit early. `client:media` with a query for components that only exist at some screen sizes, a mobile menu say. And `client:only="react"` when the component can't render on the server at all, usually because it touches `window` during render. You lose the server-rendered HTML with that one, so I treat it as a last resort.
 
-- `client:load` for anything the visitor will use immediately. The search box qualifies because it is at the top of the page.
-- `client:idle` for things that can wait a beat, such as a newsletter signup or analytics-driven widgets.
-- `client:visible` for anything below the fold. A comment widget at the bottom of a post should not load until someone scrolls there. It takes an optional `rootMargin` to start loading early.
-- `client:media="(max-width: 50em)"` for components that exist only at some screen sizes, such as a mobile menu.
-- `client:only="react"` when the component cannot render on the server at all, for example because it reads `window` during render. You lose the server-rendered HTML, so use it sparingly.
+## The rules I keep bumping into
 
-## Rules that keep islands cheap
+Props have to be serialisable. Astro writes them into the page as JSON so the browser can rebuild them. Strings, numbers, arrays, plain objects. Collection entries carry functions and internals, which is why my blog page flattens them to plain objects first. I learned this from a build error, which is the right way to learn it.
 
-**Props must be serialisable.** Astro writes props into the HTML as JSON so the browser can re-create them. Pass strings, numbers, arrays and plain objects. The blog page maps collection entries, which carry functions and non-serialisable internals, down to plain objects first.
+Islands don't share state through props. Two islands on a page are two separate apps. If they need to talk, use the URL, a custom event, or a tiny store; the Astro docs suggest nanostores and I'd go along with that. On this site the theme gallery page talks to the header picker with a custom event, which is about as low-tech as it gets and works fine.
 
-**Islands do not share state through props.** Two islands on one page are two independent apps. If they need to talk, use a nano store, the URL, or a custom event. Astro's docs recommend `nanostores` for this.
+Keep the island boundary tight. If a card has a static title and a like button, the button is the island, not the card.
 
-**Keep the island's boundary tight.** Wrap only the part that needs state. If a card has a static title and a "like" button, make the button the island, not the card.
+And honestly, reach for HTML first. A `<details>` element, a CSS-only tab bar, a native `<dialog>`. A surprising amount of "interactivity" doesn't need a script, and every island you don't ship is one that can't break.
 
-**Prefer HTML and CSS first.** A details/summary element, a CSS-only tab bar, or a native `<dialog>` often does the job with no script at all. Islands are for state the browser cannot manage on its own.
+## The other kind of island
 
-## Server islands
+There's a mirror image. A component marked `server:defer` is skipped when the page is rendered and cached, and fetched on its own after the page loads, with fallback content in the slot meanwhile. It's for dynamic bits inside an otherwise cacheable page: a cart count, a "welcome back", a recommendations block. It needs on-demand rendering, so it needs an adapter, which is the one way it differs from client islands, which are happy on a fully static build.
 
-The mirror image exists too. A component marked `server:defer` is skipped when the page is rendered and cached, and fetched separately after the page loads, with fallback content in the slot meanwhile. It is for dynamic, personalised content inside an otherwise cacheable page: a shopping-cart count, a "welcome back" line, a recommendation block. It needs on-demand rendering, so it requires an adapter, unlike client islands which work on a fully static build.
+## See it for yourself
 
-## Measuring it
-
-Build the site and look at `dist/`. Every post page is HTML with a stylesheet. The blog index has one extra script tag for the search island, and the network panel shows React loading only on that page. That is the whole promise of the pattern: the cost of interactivity is paid only by the pages that use it, and only for the component that needs it.
+Build the site and look in `dist/`. Every post page is HTML and a stylesheet. The blog index has one extra script tag for the search, and the network panel shows React loading only there. That's the whole promise: interactivity is paid for only by the pages that use it, and only for the component that needs it.

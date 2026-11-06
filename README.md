@@ -1,7 +1,7 @@
 # Astro Field Notes
 
 A developer blog built with [Astro 7](https://astro.build) that doubles as a reference implementation
-for the article **[Astro explained: the web framework for content-driven websites](ARTICLE.md)**.
+for the article **[Astro, explained by someone who just built a site with it](ARTICLE.md)**.
 
 **New here?** Read [Using Astro Field Notes as your WordPress replacement](src/content/blog/using-astro-field-notes.md)
 for what the project gives you and three ways to put it to work. Click **Use this template** on GitHub to get your own copy.

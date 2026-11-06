@@ -1,15 +1,15 @@
 ---
-title: "Content collections: a typed CMS made of files"
-description: "Defining a schema, loading Markdown with the glob loader, querying with getCollection, and rendering with render()."
+title: "A folder of Markdown with a schema in front of it"
+description: "Content collections are the reason I trust a pile of files as a CMS. Defining one, querying it, rendering it, and why the schema is the point."
 pubDate: 2026-10-21
 tags: [astro, content, typescript, tutorial]
 ---
 
-A folder of Markdown files is the simplest CMS there is. Its weakness has always been that nothing checks the files. A post with a missing date renders fine locally and crashes the build on Friday evening, or worse, ships with "Invalid Date" in the byline. Content collections fix that by putting a schema in front of the folder.
+A folder of Markdown files is the simplest CMS there is, and its weakness has always been that nothing checks the files. A post with a missing date renders fine on your laptop and breaks the build on a Friday evening, or worse, ships with "Invalid Date" in the byline. Content collections put a schema in front of the folder, and that one change is what makes me comfortable running a site this way.
 
-## Define
+## Defining one
 
-One file registers every collection:
+One file registers every collection on the site:
 
 ```ts
 // src/content.config.ts
@@ -32,11 +32,11 @@ const blog = defineCollection({
 export const collections = { blog };
 ```
 
-The loader decides where entries come from. `glob` reads files; `file` reads one JSON, YAML or CSV file with many entries; and a custom loader can call any API. The schema is Zod, re-exported from `astro/zod`, and it does more than validate: `z.coerce.date()` turns the frontmatter string into a real `Date`, `.default([])` means pages never have to check for a missing tag list, and `.max(220)` keeps descriptions short enough for a meta tag.
+The loader decides where entries come from. `glob` reads files; `file` reads a single JSON, YAML or CSV with many entries; a custom loader can call anything. The schema is Zod, re-exported from `astro/zod`, and it does more than say no. `z.coerce.date()` turns the string in the frontmatter into an actual `Date`. `.default([])` means I never check whether a post has a tags array. `.max(220)` on the description keeps it short enough to be a meta tag without me thinking about it.
 
-Each entry gets an `id` derived from its file name. `astro-explained.md` has the id `astro-explained`, which this site uses as the URL. You can override it with a `slug` field in frontmatter.
+Each entry gets an `id` from its filename. `astro-explained.md` becomes `astro-explained`, which is what I use for the URL. You can override it with a `slug` field in the frontmatter, which matters if you're migrating a site and want to keep old paths.
 
-## Query
+## Querying it
 
 ```ts
 import { getCollection, getEntry } from 'astro:content';
@@ -45,7 +45,7 @@ const posts = await getCollection('blog', ({ data }) => !data.draft);
 const one = await getEntry('blog', 'astro-explained');
 ```
 
-The return type is `CollectionEntry<'blog'>[]`, with `data` typed from the schema. Astro does not sort for you, so this site wraps the call:
+What comes back is typed from the schema. Astro doesn't sort for you, which surprised me the first time, so I wrapped the call once and use that everywhere:
 
 ```ts
 // src/lib/posts.ts
@@ -55,9 +55,9 @@ export async function getPublishedPosts() {
 }
 ```
 
-Drafts show in the dev server and disappear from builds, which is the behaviour editors expect from a draft.
+Drafts show up in the dev server and vanish from the build, which is what I'd expect a draft to do.
 
-## Render
+## Rendering it
 
 ```astro
 ---
@@ -69,11 +69,11 @@ const { Content, headings } = await render(post);
 <Content />
 ```
 
-`render` compiles the Markdown and returns a component plus the list of headings, which is how the table of contents on long posts here is built. Code blocks are syntax-highlighted at build time, so no highlighter ships to the browser.
+`render` compiles the Markdown and hands back a component plus the list of headings, which is how the table of contents on the longer posts here is built. Code blocks get highlighted at build time, so there's no highlighter running in the browser.
 
-## Reference other collections
+## Pointing at other collections
 
-Schemas can point at other collections. An `authors` collection and a `reference('authors')` field on posts gives you typed, validated joins: a post that names an author who does not exist fails the build.
+Schemas can reference each other. If I had an `authors` collection, a `reference('authors')` field on posts would give me a typed, validated join, and a post naming an author that doesn't exist would fail the build rather than render a blank:
 
 ```ts
 const blog = defineCollection({
@@ -85,6 +85,8 @@ const blog = defineCollection({
 });
 ```
 
-## Why this matters
+I haven't needed it on this site yet, which tells you something about how far a single collection gets you.
 
-Everything a traditional CMS does with a database and an admin form, a collection does with a file and a schema. Review happens in a pull request. Validation happens at build time. Types flow into every page that uses the content. And because the loader is pluggable, the same code that queries Markdown today can query a headless CMS tomorrow without touching the pages.
+## Why I keep going on about the schema
+
+Everything a database-backed CMS does with an admin form, a collection does with a file and a schema. Review happens in a pull request. Validation happens at build time, where it can't hurt anyone. Types flow into every page that uses the content, so renaming a field is a compiler error, not a hunt. And because the loader is swappable, the same code that reads Markdown today can read a headless CMS tomorrow without touching the pages. That last bit is the one I'd underline.

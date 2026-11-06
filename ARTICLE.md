@@ -1,44 +1,26 @@
-# Astro explained: the web framework for content-driven websites
+# Astro, explained by someone who just built a site with it
 
-*What Astro is, how islands and content collections work, what changed in Astro 7, and a walkthrough of a real blog built with it.*
+*What Astro is, why it ships no JavaScript unless you ask, how islands and content collections actually work, what changed in Astro 7, and the blog I built to find out.*
 
-Published 6 November 2026. This article is also the featured post of the accompanying site; the source for every snippet is in this repository.
+Published 6 November 2026. This is also a post on the site this repository builds; every code sample comes from the repository.
 
-Most websites are documents. Blogs, marketing pages, documentation, portfolios, news, e-commerce catalogues: the visitor arrives, reads, maybe clicks a button, and leaves. For a decade the industry built those documents with tools designed for applications, and visitors paid for it in megabytes of JavaScript they never needed.
+Most of the web is documents. Someone lands on a page, reads it, maybe clicks a thing, and leaves. For a good ten years we built those documents with tools made for applications, and the person reading paid for it with a megabyte of JavaScript they never needed. I did this too. Everyone did.
 
-Astro is a web framework built on the opposite assumption. Its home page calls it "the web framework for content-driven websites", and the whole design follows from that sentence. Pages render to HTML on the server or at build time. The browser receives no JavaScript unless a component explicitly asks for it. When you do need interactivity, you add it in small, isolated pieces called islands, written in React, Vue, Svelte, Solid, Preact or plain web components, side by side on the same page.
+Astro is a framework built on the opposite bet. Its home page calls it "the web framework for content-driven websites", and once you notice that sentence, every design decision in the thing falls out of it. Pages are rendered to HTML on a server or at build time. The browser gets no JavaScript unless a specific component asks for it. When you do want something interactive, you add it in small, fenced-off pieces called islands, and you can write those in React, Vue, Svelte, Solid, Preact or plain web components, on the same page if you're feeling perverse.
 
-This article explains how Astro works, what it is good and bad at, what the Astro 7 release line changed, and how the blog you are reading is put together. The source for this site is on GitHub, and every snippet below is lifted from it.
+I wanted to understand it properly, so I built a blog with it. Not a toy: content collections with a schema, one React island, Tailwind, RSS, a sitemap, five themes, and a section that pulls posts out of a real WordPress site. The whole thing is on GitHub and every code sample below comes from it, so if something here looks too neat, you can go and check.
 
-## The problem Astro solves
+## The problem it's solving
 
-A single-page application (SPA) ships a JavaScript bundle that builds the page in the browser. Frameworks like Next.js and Nuxt improved on that with server-side rendering, but they still hydrate the entire page: the browser downloads the framework, the component code and the data, then re-runs the render to attach event handlers to markup it already has. For a product dashboard that is a fair trade. For a blog post it is pure overhead.
+A single-page app ships a bundle that builds the page in the browser. Next.js and Nuxt improved on that with server rendering, but they still hydrate the whole page: download the framework, download the component code, download the data, then re-run the render to bolt event handlers onto HTML the browser already has. For a dashboard that's a fair deal. For a blog post it's just a tax.
 
-The cost shows up in Core Web Vitals. The chart on astro.build, sourced from the HTTP Archive and the Chrome UX Report, gives the share of real-world sites that pass all three Core Web Vitals:
+You can see it in Core Web Vitals. Astro's home page shows a chart from the HTTP Archive and the Chrome UX Report: the share of real sites that pass all three vitals. Astro sits at 71 percent. WordPress is at 48, Gatsby 45, Next.js 35, Nuxt 28.
 
-| Framework | Sites passing CWV |
-| --------- | ----------------- |
-| Astro     | 71%               |
-| WordPress | 48%               |
-| Gatsby    | 45%               |
-| Next.js   | 35%               |
-| Nuxt      | 28%               |
+I'd treat those numbers with some care. They're population statistics, not a benchmark, and a good team can make any of those frameworks fast. But most sites aren't built by a good team with time on their hands. Most sites run on defaults. Astro's default is to send HTML and CSS and stop.
 
-Those are population statistics, not a benchmark, and a careful team can make any framework fast. But the defaults matter, because most sites run on defaults. Astro's default is to ship HTML and CSS and nothing else.
+## The component format
 
-## Five design principles
-
-The "Why Astro" page in the docs lists five principles. Paraphrased:
-
-1. **Content-driven.** Astro is designed to present content, and it scales up toward applications rather than down from them.
-2. **Server-first.** Rendering happens on the server, at build time or on request. Client-side rendering is opt-in, per component.
-3. **Fast by default.** The stated goal is that it should be nearly impossible to build a slow site with Astro.
-4. **Easy to use.** The `.astro` component language is a superset of HTML, and you can bring any UI framework's components without rewriting them.
-5. **Developer-focused.** A CLI, an official editor extension, TypeScript support, and documentation in a dozen-plus languages.
-
-## The .astro component
-
-An Astro component is an HTML file with a fenced block of JavaScript at the top. The fence runs on the server, never in the browser, so you can `await` a database query or a `fetch` right there. Below the fence is an HTML template with JSX-style expressions.
+An Astro component is an HTML file with a fenced block of JavaScript at the top. The fence runs on the server, never in the browser, so you can `await` a database query or a `fetch` right there and nobody downloads it. Under the fence is HTML with JSX-ish expressions. Here's the post card from my site:
 
 ```astro
 ---
@@ -53,8 +35,8 @@ interface Props {
 const { post } = Astro.props;
 ---
 
-<article class="rounded-xl border p-5">
-  <p class="text-xs text-slate-500">
+<article class="rounded-card border p-5">
+  <p class="text-xs text-ink-muted">
     <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
     <span>{readingTime(post.body)} min read</span>
   </p>
@@ -63,25 +45,17 @@ const { post } = Astro.props;
 </article>
 ```
 
-Three things to notice. `Astro.props` is typed by the `Props` interface, so a page that passes the wrong shape fails type-checking. The template is real HTML, not JSX: `class`, not `className`, and no wrapping fragment required. And the component's output is a string of HTML. There is no runtime for it in the browser, because there is nothing left to run.
+A few things I appreciated. `Astro.props` is typed by that `Props` interface, so if a page passes the wrong shape the type checker catches it before I do. The template is HTML, not JSX: it's `class`, not `className`, and you don't need to wrap siblings in a fragment. And the output of this component is a string. There's no runtime for it in the browser because there's nothing left to run.
 
-A `<style>` tag inside a component is scoped to that component automatically. This site uses Tailwind instead, but scoped styles are the zero-configuration default.
+A `<style>` tag inside a component is scoped to that component with no configuration. I went with Tailwind for this site, but scoped styles are the default and they're good.
 
-## Islands: interactivity where you need it
+## Islands
 
-The term "islands architecture" was coined by Etsy's Katie Sylor-Miller in 2019 and written up by Preact's Jason Miller in 2020. Astro built its component model around it. A page is a static ocean of HTML; an island is one component that gets hydrated in the browser, independently of everything around it.
+Etsy's Katie Sylor-Miller coined "component islands" in 2019 and Jason Miller from the Preact team wrote it up in 2020. Astro took the idea and built its whole component model around it. The page is a static sea of HTML. An island is one component that gets hydrated in the browser, on its own, without dragging the rest of the page with it.
 
-You mark an island with a `client:*` directive. Each directive is a loading strategy:
+You make an island by adding a `client:*` directive to a component. The directive is really a loading strategy. `client:load` hydrates straight away, for things the visitor will use immediately. `client:idle` waits until the browser has nothing better to do. `client:visible` waits until the component scrolls into view, which is what you want for a comments widget at the bottom of a long post. `client:media` takes a media query, for a mobile-only menu. And `client:only` skips server rendering entirely, for a component that can't run on the server because it reaches for `window` during render; use that one sparingly because you lose the HTML.
 
-| Directive        | When it hydrates                                 | Use for                                   |
-| ---------------- | ------------------------------------------------ | ----------------------------------------- |
-| `client:load`    | Immediately on page load                         | Things visible and interactive at once    |
-| `client:idle`    | When the browser is idle (`requestIdleCallback`) | Lower-priority widgets                    |
-| `client:visible` | When it scrolls into the viewport                | Anything below the fold                   |
-| `client:media`   | When a media query matches                       | Mobile-only menus, desktop-only sidebars  |
-| `client:only`    | Skips server rendering, renders in browser only  | Components that cannot run on the server  |
-
-The blog index on this site has exactly one island, a React search box:
+The blog index on my site has one island, a search box in React:
 
 ```astro
 ---
@@ -101,13 +75,13 @@ const searchable = posts.map((post) => ({
 <PostSearch client:load posts={searchable} />
 ```
 
-Without the directive, Astro would render the React component to HTML on the server and ship no React at all. With `client:load`, the browser downloads React and this one component and hydrates it in place. The header, the footer and the layout around it stay inert HTML. Props must be serialisable, which is why the page maps collection entries to plain objects first.
+Take the directive off and Astro still renders the component, to HTML, on the server, and ships no React at all. Put it back and the browser downloads React plus this one component and hydrates it in place. The header, the footer, the layout: all still inert HTML. One rule to remember is that props have to be serialisable, because Astro writes them into the page as JSON. That's why the page flattens the collection entries into plain objects first. I tripped over that once and never again.
 
-Astro 4.12 added the mirror image: **server islands**. A component marked `server:defer` is left out of the cached static page and rendered separately on request, with fallback content shown meanwhile. That lets a fully cached marketing page carry a personalised "signed in as" widget without giving up the cache.
+There's a mirror image called server islands. Mark a component `server:defer` and it's left out of the cached page and fetched separately on request, with fallback content in its slot in the meantime. It's for the "signed in as" widget on a page you'd otherwise like to cache for a week. It needs on-demand rendering, so it needs an adapter; client islands work on a fully static build.
 
-## Content collections: typed Markdown
+## Content collections, or the part that makes this a CMS
 
-Content collections are the feature that makes Astro a credible CMS replacement for developer-run sites. A collection is a folder of content plus a schema. Astro validates every file against the schema at build time and generates TypeScript types from it.
+This is the feature that made me take Astro seriously as a WordPress alternative for sites run by developers. A collection is a folder of content plus a schema. Astro validates every file against the schema when it builds and generates TypeScript types from it.
 
 ```ts
 // src/content.config.ts
@@ -131,7 +105,7 @@ const blog = defineCollection({
 export const collections = { blog };
 ```
 
-The `glob` loader reads local files. Astro 5 introduced the Content Layer, which made loaders pluggable: a loader can fetch from a REST API, a headless CMS, a database or a CSV file, and the result is still a typed collection with the same query API. The query API is two functions:
+The `glob` loader reads files off disk. Since Astro 5 the loader is pluggable, so it can just as easily fetch from a REST API, a headless CMS, a database or a CSV, and what comes back is still a typed collection with the same two-function query API:
 
 ```ts
 import { getCollection, getEntry, render } from 'astro:content';
@@ -141,11 +115,11 @@ const post = await getEntry('blog', 'astro-explained');
 const { Content, headings } = await render(post);
 ```
 
-Everything is typed. `post.data.pubDate` is a `Date`, not a string, because the schema coerced it. Misspell `pubDate` as `pubdate` in a Markdown file and the build fails with the file name and the field, which is what you want from a CMS.
+`post.data.pubDate` is a real `Date`, not a string, because the schema coerced it. Misspell `pubDate` in a Markdown file and the build fails and tells you the file and the field. I've worked with content systems that let that through to production and I'd rather not again.
 
-## Routing and rendering
+## Routes, static and otherwise
 
-Routes are files. `src/pages/about.astro` becomes `/about`. `src/pages/blog/[id].astro` is a dynamic route, and for a static build it exports `getStaticPaths` to say which pages exist:
+Routes are files. `src/pages/about.astro` is `/about`. A file with brackets in the name is a dynamic route, and for a static build it exports a function listing the pages that exist:
 
 ```astro
 ---
@@ -162,9 +136,9 @@ const { Content } = await render(post);
 ---
 ```
 
-By default every route is prerendered at build time to a plain HTML file. If a page needs per-request data, add an adapter for your host (`npx astro add node`, `vercel`, `netlify` or `cloudflare`) and set `export const prerender = false` on that page. The two modes mix freely in one project. Astro also has middleware, API endpoints (any file in `src/pages` that exports `GET` or `POST`), form actions with type-safe server functions, and sessions.
+By default every route is prerendered at build time to an HTML file. If a page genuinely needs per-request data, you add an adapter for your host (`npx astro add node`, or `vercel`, `netlify`, `cloudflare`) and set `export const prerender = false` on that one page. The two modes mix in one project without fuss. There's also middleware, API endpoints (any file in `src/pages` that exports `GET` or `POST`), typed form actions and sessions, none of which my blog needed, which is sort of the point.
 
-The RSS feed on this site is an endpoint:
+The RSS feed is an endpoint:
 
 ```ts
 // src/pages/rss.xml.ts
@@ -186,9 +160,9 @@ export async function GET(context: APIContext) {
 }
 ```
 
-## Data from anywhere: the headless WordPress demo
+## Pulling content from WordPress
 
-Astro does not care where content comes from. The `/wordpress` section of this site fetches posts from a WordPress REST API during the build and writes static pages for them. Editors keep the WordPress admin; visitors get HTML from a CDN.
+Astro doesn't care where content comes from, and I wanted to prove that with the most common CMS there is. The `/wordpress` section of my site fetches posts from a WordPress site's REST API during the build and writes a static page for each. The editors keep WordPress. The visitors get HTML off a CDN.
 
 ```ts
 // src/lib/wordpress.ts (abridged)
@@ -207,9 +181,9 @@ export function getWpPosts(perPage = 12): Promise<WpPost[]> {
 }
 ```
 
-Two details worth copying. The promise is cached at module level, so the index page and every post page share one request. And the real function wraps the fetch in a `try`/`catch` that returns an empty list on failure: an unreachable CMS should produce an empty section, not a failed deploy.
+Two things in there are worth stealing. The promise is cached at module level, so the index page and all the post pages share one request instead of hammering the API. And the real version wraps the fetch in a try/catch that returns an empty list on failure, because I'd rather an unreachable CMS produced an empty section than a failed deploy at eleven at night.
 
-Pages consume it like any other data:
+The pages that consume it look like any other page:
 
 ```astro
 ---
@@ -224,43 +198,39 @@ const { post } = Astro.props;
 <div class="prose" set:html={post.content} />
 ```
 
-`set:html` injects rendered HTML. WordPress returns HTML for titles and bodies, so this is the right tool, with the usual caveat that you should only do it with content you trust.
+`set:html` injects HTML as-is. WordPress returns HTML for titles and bodies, so it's the right tool, with the usual caveat that you only do this with content you trust.
 
-## Styling, images, SEO
+## Styling, images, the SEO stuff
 
-Astro supports scoped `<style>` blocks, global CSS, CSS modules, Sass, and Tailwind. Since Astro 5.2 the way to add Tailwind 4 is `npx astro add tailwind`, which installs the official `@tailwindcss/vite` plugin and creates a global stylesheet containing `@import "tailwindcss"`. No `tailwind.config.js` is needed; Tailwind 4 configures itself in CSS.
+Scoped styles, global CSS, CSS modules, Sass and Tailwind all work. Since Astro 5.2 you add Tailwind 4 with `npx astro add tailwind`, which installs the official Vite plugin and drops an `@import "tailwindcss"` into a global stylesheet. There's no `tailwind.config.js` anymore; Tailwind 4 configures itself in CSS, which is how I ended up with themes as blocks of CSS variables.
 
-The `<Image />` and `<Picture />` components from `astro:assets` resize and convert images at build time and emit `width` and `height` to prevent layout shift. Astro 5.7 introduced a fonts API, experimental at first, for self-hosting web fonts with the same approach.
+The `<Image />` and `<Picture />` components from `astro:assets` resize and convert images at build time and write out `width` and `height` so nothing jumps around while loading. Astro 5.7 brought in a fonts API, experimental at first, for self-hosting web fonts the same way.
 
-For SEO there is nothing to install. The layout on this site sets a canonical URL from `Astro.site` and `Astro.url`, Open Graph and Twitter tags, and links to the RSS feed and sitemap. The `@astrojs/sitemap` integration writes `sitemap-index.xml` from the list of built pages.
+For SEO I installed nothing. The layout sets a canonical URL from `Astro.site` and `Astro.url`, adds Open Graph and Twitter tags, and links the feed and the sitemap. The sitemap integration writes `sitemap-index.xml` from the list of pages it just built.
 
 ## What changed in Astro 7
 
-Astro 7.0 shipped on 22 June 2026 and the current release, 7.4, followed on 15 October 2026. The release line is about build speed and a tighter toolchain:
+Astro 7.0 came out on 22 June 2026 and 7.4, the current release, on 15 October. The whole line is about build speed and a tighter toolchain, and I noticed it: my 45-page site builds in about four seconds.
 
-- **Vite 8 with Rolldown.** Rolldown replaces esbuild and Rollup. Astro reports production builds 15 to 61 percent faster, and the astro.build site itself went from 62.7 to 24.2 seconds.
-- **A Rust compiler.** The `.astro` compiler was rewritten on top of oxc and Lightning CSS. It is faster and stricter: the old compiler silently fixed malformed HTML, the new one reports an unclosed tag as an error.
-- **Sätteri for Markdown.** A Rust Markdown pipeline is the default. The unified/remark stack is still available through `@astrojs/markdown-remark` if you depend on remark plugins.
-- **Queued rendering** became the default rendering engine, with the team quoting around 2.4 times faster output on expression-heavy pages.
-- **Route caching** graduated from experimental: `Astro.cache`, a memory cache provider, route rules and cache invalidation, with experimental CDN providers for Netlify, Vercel and Cloudflare.
-- **Tooling for agents and CI.** `astro dev --background` runs the dev server detached, logs can be emitted as JSON, and 7.4 added `astro build --timings` to show where build time goes.
-- **Node.js 22.22 or newer** is required as of 7.4.
+Vite 8 with Rolldown replaced esbuild and Rollup, and the Astro team quotes production builds 15 to 61 percent faster; their own site went from 62.7 seconds to 24.2. The `.astro` compiler was rewritten in Rust on top of oxc and Lightning CSS. It's quicker and it's stricter: the old compiler would quietly fix malformed HTML, the new one reports an unclosed tag as an error, which bit me once and was right to. Markdown now goes through Sätteri, a Rust pipeline, with the old remark stack still available if you depend on remark plugins. Queued rendering became the default engine. Route caching graduated from experimental, with `Astro.cache`, a memory provider and route rules. And there's tooling clearly aimed at CI and agents: `astro dev --background`, JSON logs, and in 7.4 an `astro build --timings` flag that shows where the time goes. You need Node 22.22 or newer.
 
-If you are on Astro 4 or 5, `npx @astrojs/upgrade` walks through the version bumps and the upgrade guides list the breaking changes.
+If you're on an older major, `npx @astrojs/upgrade` walks you through it.
 
-## When Astro is the wrong tool
+## When I wouldn't use it
 
-Astro's own docs are candid that it is built for content. Three cases where I would pick something else:
+Astro's own docs are upfront that it's for content, and I'd agree with where they draw the line.
 
-- **An application that is mostly interactive state.** A dashboard where every element responds to every other element is one big island. Astro can host it, but you lose the advantage and gain a layer of indirection. Next.js, Nuxt, SvelteKit or a plain SPA fit better.
-- **A site run by non-technical editors who need a visual editor, previews and plugins.** Astro has no admin UI. Pair it with a headless CMS, or stay on WordPress.
-- **Very large sites with per-request personalisation everywhere.** Possible with on-demand rendering and server islands, but at that point you are operating a server and evaluating Astro against application frameworks on their own terms.
+If your thing is an application, where every control reacts to every other control, you'd end up with one giant island and none of the benefit. Use Next, Nuxt, SvelteKit or a plain SPA and don't feel bad about it.
 
-## Can Astro replace WordPress?
+If the people writing content need a visual editor, previews and a plugin store, Astro has no admin UI. Pair it with a headless CMS, keep WordPress as the editor, or just stay on WordPress.
 
-For a developer-run blog, documentation site or marketing site, yes, and the result will be faster, cheaper to host and harder to hack, because there is no server-side runtime to attack. For an editorial team that lives in the WordPress editor, the better move is usually to keep WordPress as a headless content source and let Astro render the front end, exactly as the demo section on this site does. For sites that depend on the plugin ecosystem, WooCommerce, memberships or comments, WordPress still earns its place. There is a longer post on this site that works through each case.
+And if you've got an enormous site with personalisation on every page, you can do it with on-demand rendering and server islands, but at that point you're running a server and you should compare Astro against the application frameworks on their own ground.
 
-## Running this project
+## So, can it replace WordPress?
+
+For a developer-run blog, docs site or marketing site: yes, and the result is faster, close to free to host, and much harder to break into, because there's no server-side runtime on the public internet. For a team that lives in the WordPress editor, I'd keep WordPress as a headless source and let Astro render the front, which is what the demo section on my site does. For sites that are really a plugin ecosystem, WooCommerce and memberships and all that, WordPress still earns its keep. There's a longer post on the site that goes through each case, and another one that's a step-by-step guide to using this project for exactly that.
+
+## Try it
 
 ```bash
 git clone https://github.com/fareezahmed/astro-blog
@@ -269,4 +239,4 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:4321`. Edit a file in `src/content/blog` and the page updates. Run `npm run build` and look in `dist/`: every post is an HTML file, the blog index carries one small script for the search island, and nothing else runs in the browser. That folder is the whole site, and any static host can serve it.
+Open `localhost:4321`, edit a file in `src/content/blog`, watch it update. Then run `npm run build` and poke around in `dist/`. Every post is an HTML file. The blog index has one small script for the search box. Nothing else runs in the browser. That folder is the entire site, and anything that can serve files can serve it.

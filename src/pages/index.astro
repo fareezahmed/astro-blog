@@ -1,0 +1,70 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PostCard from '../components/PostCard.astro';
+import { getPublishedPosts } from '../lib/posts';
+import { url } from '../lib/url';
+
+const posts = await getPublishedPosts();
+const featured = posts.find((p) => p.data.featured) ?? posts[0];
+const latest = posts.filter((p) => p.id !== featured?.id).slice(0, 4);
+
+const pillars = [
+  {
+    title: 'Content Collections',
+    body: 'Markdown files in src/content/blog, validated by a Zod schema at build time and queried with a typed API.',
+    href: '/blog',
+  },
+  {
+    title: 'Islands Architecture',
+    body: 'Pages are static HTML. The post search on the blog page is the only React component that ships JavaScript.',
+    href: '/blog',
+  },
+  {
+    title: 'Headless WordPress',
+    body: 'Posts pulled from a WordPress REST API at build time and rendered as static pages, no PHP server in production.',
+    href: '/wordpress',
+  },
+];
+---
+
+<Layout title="Astro Field Notes" description="A developer blog built with Astro 7: content collections, islands, Tailwind, and a headless WordPress demo.">
+  <section class="py-8 sm:py-14">
+    <p class="mb-3 text-sm font-medium uppercase tracking-wider text-brand-600 dark:text-brand-400">Built with Astro 7</p>
+    <h1 class="max-w-3xl text-4xl font-bold tracking-tight sm:text-5xl">
+      A content site that ships <span class="text-brand-600 dark:text-brand-400">zero JavaScript</span> by default.
+    </h1>
+    <p class="mt-5 max-w-2xl text-lg text-slate-600 dark:text-slate-300">
+      This blog is a working reference for Astro: Markdown content collections, a single React island,
+      Tailwind CSS 4, RSS, a sitemap, and a headless WordPress integration. Read the posts, then read the source.
+    </p>
+    <div class="mt-8 flex flex-wrap gap-3">
+      {featured && (
+        <a href={url(`/blog/${featured.id}`)} class="rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-brand-700">
+          Read: {featured.data.title}
+        </a>
+      )}
+      <a href="https://github.com/fareezahmed/astro-blog" class="rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-medium hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-900">
+        View source on GitHub
+      </a>
+    </div>
+  </section>
+
+  <section class="grid gap-4 sm:grid-cols-3">
+    {pillars.map((p) => (
+      <a href={url(p.href)} class="rounded-xl border border-slate-200 p-5 hover:border-brand-400 dark:border-slate-800 dark:hover:border-brand-500">
+        <h2 class="font-semibold">{p.title}</h2>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">{p.body}</p>
+      </a>
+    ))}
+  </section>
+
+  <section class="mt-14">
+    <div class="mb-5 flex items-baseline justify-between">
+      <h2 class="text-2xl font-bold tracking-tight">Latest posts</h2>
+      <a href={url('/blog')} class="text-sm text-brand-600 hover:underline dark:text-brand-400">All posts →</a>
+    </div>
+    <div class="grid gap-4 sm:grid-cols-2">
+      {latest.map((post) => <PostCard post={post} />)}
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,15 @@
+---
+import { url } from '../lib/url';
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-slate-200 py-8 text-sm text-slate-500 dark:border-slate-800 dark:text-slate-400">
+  <div class="mx-auto flex max-w-5xl flex-col gap-2 px-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+    <p>© {year} Astro Field Notes. Built with <a class="underline" href="https://astro.build">Astro</a>, zero client JavaScript by default.</p>
+    <p class="flex gap-4">
+      <a class="hover:underline" href={url('/rss.xml')}>RSS</a>
+      <a class="hover:underline" href={url('/sitemap-index.xml')}>Sitemap</a>
+      <a class="hover:underline" href="https://github.com/fareezahmed/astro-blog">Source</a>
+    </p>
+  </div>
+</footer>

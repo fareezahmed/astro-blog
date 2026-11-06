@@ -1,0 +1,29 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getPublishedPosts, getTagCounts, type Post } from '../../lib/posts';
+import { url } from '../../lib/url';
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+  return getTagCounts(posts).map(([tag]) => ({
+    params: { tag },
+    props: { posts: posts.filter((p) => p.data.tags.includes(tag)) },
+  }));
+}
+
+interface Props {
+  posts: Post[];
+}
+const { tag } = Astro.params;
+const { posts } = Astro.props;
+---
+
+<Layout title={`#${tag}`} description={`Posts tagged ${tag}.`}>
+  <p class="text-sm"><a href={url('/tags')} class="text-brand-600 hover:underline dark:text-brand-400">← All tags</a></p>
+  <h1 class="mt-2 text-3xl font-bold tracking-tight">#{tag}</h1>
+  <p class="mt-1 mb-8 text-slate-500">{posts.length} {posts.length === 1 ? 'post' : 'posts'}</p>
+  <div class="grid gap-4 sm:grid-cols-2">
+    {posts.map((post) => <PostCard post={post} />)}
+  </div>
+</Layout>

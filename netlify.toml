@@ -1,0 +1,9 @@
+# Netlify: static Astro sites need no adapter.
+# Set SITE_URL in the Netlify UI if you use a custom domain; otherwise the
+# build falls back to Netlify's own URL variable.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "24"

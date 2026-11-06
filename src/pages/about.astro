@@ -1,0 +1,39 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { url } from '../lib/url';
+
+const stack = [
+  ['Astro 7', 'Static site generation, routing, content collections, Markdown rendering'],
+  ['Tailwind CSS 4', 'Styling through the official Vite plugin and the Typography plugin for Markdown'],
+  ['React 19', 'One interactive island: the post search on the blog page'],
+  ['@astrojs/rss', 'RSS feed generated from the blog collection'],
+  ['@astrojs/sitemap', 'sitemap-index.xml generated at build time'],
+  ['WordPress REST API', 'Headless content source fetched at build time'],
+];
+---
+
+<Layout title="About" description="What this site is and how it is built.">
+  <article class="prose prose-slate max-w-3xl dark:prose-invert prose-a:text-brand-600 dark:prose-a:text-brand-400">
+    <h1>About this site</h1>
+    <p>
+      Astro Field Notes is a reference project that accompanies the article
+      <a href={url('/blog/astro-explained')}>Astro explained: the web framework for content-driven websites</a>.
+      It exists to show, with running code, what Astro does differently from a traditional CMS or a single-page app framework.
+    </p>
+    <h2>Stack</h2>
+    <table>
+      <thead><tr><th>Tool</th><th>Role</th></tr></thead>
+      <tbody>{stack.map(([name, role]) => <tr><td>{name}</td><td>{role}</td></tr>)}</tbody>
+    </table>
+    <h2>Where to look in the source</h2>
+    <ul>
+      <li><code>src/content.config.ts</code> defines the blog collection and its schema.</li>
+      <li><code>src/content/blog/</code> holds the posts as Markdown.</li>
+      <li><code>src/pages/blog/[id].astro</code> turns each post into a static page.</li>
+      <li><code>src/components/PostSearch.tsx</code> is the only component that runs in the browser.</li>
+      <li><code>src/lib/wordpress.ts</code> talks to the WordPress REST API.</li>
+      <li><code>.github/workflows/deploy.yml</code>, <code>netlify.toml</code>, <code>vercel.json</code> and <code>wrangler.jsonc</code> cover deployment.</li>
+    </ul>
+    <p>The source is on <a href="https://github.com/fareezahmed/astro-blog">GitHub</a>.</p>
+  </article>
+</Layout>

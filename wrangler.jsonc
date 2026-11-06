@@ -1,0 +1,11 @@
+// Cloudflare Workers with static assets. Static Astro sites need no adapter.
+//   npm install -D wrangler
+//   npx astro build && npx wrangler deploy
+{
+  "name": "astro-blog",
+  "compatibility_date": "2026-11-06",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page"
+  }
+}

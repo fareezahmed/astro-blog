@@ -1,0 +1,31 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getWpPosts, type WpPost } from '../../lib/wordpress';
+import { formatDate } from '../../lib/posts';
+import { url } from '../../lib/url';
+
+// One static page per WordPress post. The list was already fetched for the
+// index page; getWpPosts() caches it so this is not a second request.
+export async function getStaticPaths() {
+  const posts = await getWpPosts();
+  return posts.map((post) => ({ params: { slug: post.slug }, props: { post } }));
+}
+
+interface Props {
+  post: WpPost;
+}
+const { post } = Astro.props;
+const plainTitle = post.title.replace(/<[^>]+>/g, '');
+const plainExcerpt = post.excerpt.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim().slice(0, 200);
+---
+
+<Layout title={plainTitle} description={plainExcerpt} type="article" publishedTime={post.date}>
+  <article class="mx-auto max-w-3xl">
+    <p class="text-sm"><a href={url('/wordpress')} class="text-brand-600 hover:underline dark:text-brand-400">← All WordPress posts</a></p>
+    <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">
+      {formatDate(post.date)}{post.author && ` · ${post.author}`} · <a class="underline" href={post.link}>Original on WordPress</a>
+    </p>
+    <h1 class="mt-2 text-3xl font-bold tracking-tight sm:text-4xl" set:html={post.title} />
+    <div class="prose prose-slate mt-8 max-w-none dark:prose-invert prose-a:text-brand-600 dark:prose-a:text-brand-400 prose-img:rounded-lg" set:html={post.content} />
+  </article>
+</Layout>

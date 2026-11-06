@@ -8,7 +8,10 @@ import { z } from 'astro/zod';
 // readable error instead of shipping a broken page.
 const blog = defineCollection({
   loader: glob({ base: './src/content/blog', pattern: '**/*.{md,mdx}' }),
-  schema: z.object({
+  // `image()` validates that the file exists and turns it into an optimizable
+  // asset. Covers live next to the posts, e.g. ./covers/my-post.png, and are
+  // generated with `node scripts/make-cover.mjs`.
+  schema: ({ image }) => z.object({
     title: z.string().max(120),
     description: z.string().max(220),
     pubDate: z.coerce.date(),
@@ -16,6 +19,8 @@ const blog = defineCollection({
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
     featured: z.boolean().default(false),
+    cover: image().optional(),
+    coverAlt: z.string().max(200).optional(),
   }),
 });
 

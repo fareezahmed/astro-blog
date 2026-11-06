@@ -1,5 +1,7 @@
 # Astro, explained by someone who just built a site with it
 
+![Cover: a grid of dim page blocks with one lit in violet, the island that ships JavaScript](src/content/blog/covers/astro-explained.png)
+
 *What Astro is, why it ships no JavaScript unless you ask, how islands and content collections actually work, what changed in Astro 7, and the blog I built to find out.*
 
 Published 6 November 2026. This is also a post on the site this repository builds; every code sample comes from the repository.

@@ -3,6 +3,8 @@ title: "Astro, explained by someone who just built a site with it"
 description: "What Astro is, why it ships no JavaScript unless you ask, how islands and content collections actually work, what changed in Astro 7, and the blog I built to find out."
 pubDate: 2026-11-06
 tags: [astro, architecture, performance, tutorial]
+cover: ./covers/astro-explained.png
+coverAlt: "A grid of dim page blocks with one lit in violet, the island that ships JavaScript, next to the article title."
 ---
 
 Most of the web is documents. Someone lands on a page, reads it, maybe clicks a thing, and leaves. For a good ten years we built those documents with tools made for applications, and the person reading paid for it with a megabyte of JavaScript they never needed. I did this too. Everyone did.

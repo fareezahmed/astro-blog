@@ -53,6 +53,8 @@ src/
     themes.astro           # theme gallery with live previews
     about.astro, 404.astro
     rss.xml.ts, robots.txt.ts  # endpoints
+  content/blog/covers/       # cover images referenced from frontmatter
+scripts/make-cover.mjs       # renders a cover PNG from the post title
   styles/
     global.css             # Tailwind + semantic tokens (@theme inline)
     themes.css             # the five themes as CSS variables
@@ -79,6 +81,13 @@ Body in Markdown.
 
 The file name becomes the URL (`my-post.md` → `/blog/my-post`). A missing or mistyped field fails the build with
 a message pointing at the file.
+
+Optional `cover: ./covers/my-post.png` and `coverAlt` add a 1200×630 image to the post page, the post card and the
+Open Graph tags. Generate one in the site's style with:
+
+```bash
+node scripts/make-cover.mjs --title "My post" --out src/content/blog/covers/my-post.png
+```
 
 ## Configuration
 

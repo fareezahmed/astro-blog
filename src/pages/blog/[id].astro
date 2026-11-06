@@ -1,5 +1,6 @@
 ---
 import { render } from 'astro:content';
+import { Image, getImage } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
 import { formatDate, getPublishedPosts, readingTime, type Post } from '../../lib/posts';
 import { url } from '../../lib/url';
@@ -22,10 +23,31 @@ interface Props {
 const { post, newer, older } = Astro.props;
 const { Content, headings } = await render(post);
 const toc = headings.filter((h) => h.depth === 2);
+
+// Share image: a plain PNG at the original 1200x630 so link previews get a
+// predictable file. The in-page <Image> below is optimized separately.
+const share = post.data.cover ? await getImage({ src: post.data.cover, format: 'png' }) : undefined;
 ---
 
-<Layout title={post.data.title} description={post.data.description} type="article" publishedTime={post.data.pubDate}>
+<Layout
+  title={post.data.title}
+  description={post.data.description}
+  type="article"
+  publishedTime={post.data.pubDate}
+  image={share?.src}
+  imageAlt={post.data.coverAlt}
+>
   <article class="mx-auto max-w-3xl">
+    {post.data.cover && (
+      <Image
+        src={post.data.cover}
+        alt={post.data.coverAlt ?? ''}
+        widths={[640, 960, 1200]}
+        sizes="(min-width: 48rem) 48rem, 100vw"
+        loading="eager"
+        class="mb-8 w-full rounded-card border border-line"
+      />
+    )}
     <header class="mb-8">
       <p class="flex flex-wrap gap-x-3 text-sm text-ink-muted">
         <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>

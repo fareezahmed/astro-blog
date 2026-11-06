@@ -77,7 +77,10 @@ const gridW = cols * size + (cols - 1) * gap;
 const gridH = rows * size + (rows - 1) * gap;
 const gx = W - 90 - gridW;
 const gy = (H - gridH) / 2 + 10;
-const lit = { c: 2, r: 1 };
+// Which block is lit varies per title so a list of covers does not repeat.
+const hash = [...opts.title].reduce((h, ch) => (h * 31 + ch.charCodeAt(0)) >>> 0, 7);
+const slot = hash % ((cols - 1) * rows); // never the first column, so the glow stays clear of the title
+const lit = { c: 1 + (slot % (cols - 1)), r: Math.floor(slot / (cols - 1)) };
 let blocks = '';
 for (let r = 0; r < rows; r++) {
   for (let c = 0; c < cols; c++) {

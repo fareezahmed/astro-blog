@@ -3,6 +3,8 @@ title: "Can Astro replace WordPress? Depends who's typing."
 description: "The question I get asked most. The answer comes down to who writes the content, and there are three sensible ways to go depending on that."
 pubDate: 2026-11-04
 tags: [astro, wordpress, headless, decision]
+cover: ./covers/astro-vs-wordpress.png
+coverAlt: "Cover: the post title beside a grid of page blocks with one lit island."
 ---
 
 WordPress runs something like two in five websites. Astro is a build tool that turns files into HTML. Asking whether one replaces the other is a bit like asking whether a bicycle replaces a city. And yet it's the question I get asked most, because the two overlap exactly where most WordPress sites live: a blog, a marketing site, some docs, a small catalogue.

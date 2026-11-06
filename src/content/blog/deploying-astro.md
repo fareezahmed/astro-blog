@@ -3,6 +3,8 @@ title: "Deploying the same Astro site to four hosts"
 description: "One static build, GitHub Pages, Netlify, Vercel and Cloudflare. The sub-path trap on Pages, what each host wants, and when you'd need an adapter."
 pubDate: 2026-10-14
 tags: [astro, deployment, github-actions, hosting]
+cover: ./covers/deploying-astro.png
+coverAlt: "Cover: the post title beside a grid of page blocks with one lit island."
 ---
 
 `astro build` writes a folder called `dist/`. For a static site that folder is the deliverable, full stop, and every host in this post serves it the same way. The differences are in how the build gets run and what URL the site ends up at. I set this project up for all four so I'd stop re-learning the differences.

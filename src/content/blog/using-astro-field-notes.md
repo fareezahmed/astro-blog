@@ -3,6 +3,8 @@ title: "So you want to leave WordPress. Here's what this project is for."
 description: "A plain-spoken guide to Astro Field Notes: what's in it, who should bother, and three ways to use it instead of (or alongside) WordPress."
 pubDate: 2026-11-06
 tags: [astro, wordpress, guide, migration, headless]
+cover: ./covers/using-astro-field-notes.png
+coverAlt: "Cover: the post title beside a grid of page blocks with one lit island."
 featured: true
 ---
 

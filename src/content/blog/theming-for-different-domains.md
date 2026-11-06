@@ -3,6 +3,8 @@ title: "Five themes from one code base, and how I wired them"
 description: "This site can look like a dev blog, a law firm, a magazine, a design studio or a wellness brand. CSS variables, Tailwind 4 tokens, and one build-time setting."
 pubDate: 2026-11-05
 tags: [astro, tailwind, design, theming]
+cover: ./covers/theming-for-different-domains.png
+coverAlt: "Cover: the post title beside a grid of page blocks with one lit island."
 ---
 
 A WordPress site gets its look from a theme, and the theme directory has thousands of them because a law firm, a food blog and a developer newsletter shouldn't look the same. I wanted the same flexibility here without the same mess, so this site has five themes, each aimed at a kind of business, and the whole mechanism is small enough to explain in a few minutes.

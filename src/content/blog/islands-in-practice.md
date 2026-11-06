@@ -3,6 +3,8 @@ title: "One island, and what it taught me about the rest of the page"
 description: "The blog index on this site has a React search box and nothing else that runs in the browser. Here's how that works and what to watch for."
 pubDate: 2026-10-28
 tags: [astro, islands, react, performance]
+cover: ./covers/islands-in-practice.png
+coverAlt: "Cover: the post title beside a grid of page blocks with one lit island."
 ---
 
 The blog index on this site has a search box. It filters posts as you type, so it needs JavaScript. Nothing else on that page does. Islands architecture is the pattern that lets the search box have its JavaScript without the header, the footer and the post cards paying for it, and until I built one I didn't fully believe it was that simple.

@@ -3,6 +3,8 @@ title: "A folder of Markdown with a schema in front of it"
 description: "Content collections are the reason I trust a pile of files as a CMS. Defining one, querying it, rendering it, and why the schema is the point."
 pubDate: 2026-10-21
 tags: [astro, content, typescript, tutorial]
+cover: ./covers/content-collections.png
+coverAlt: "Cover: the post title beside a grid of page blocks with one lit island."
 ---
 
 A folder of Markdown files is the simplest CMS there is, and its weakness has always been that nothing checks the files. A post with a missing date renders fine on your laptop and breaks the build on a Friday evening, or worse, ships with "Invalid Date" in the byline. Content collections put a schema in front of the folder, and that one change is what makes me comfortable running a site this way.

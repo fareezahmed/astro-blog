@@ -1,0 +1,258 @@
+/*
+  Theme tokens.
+
+  Each theme sets light values (--l-*) and dark values (--d-*) plus a few
+  mode-independent choices (fonts, radii, heading tracking). The mode rules at
+  the bottom copy one set into the live variables (--brand, --surface, ...)
+  that global.css exposes to Tailwind as `bg-brand`, `text-ink`, etc.
+
+  The active theme is the `data-theme` attribute on <html>, set at build time
+  from SITE_THEME (see src/lib/themes.ts) and overridable in the browser by
+  the ThemePicker island. Any element can also carry its own data-theme to
+  preview a theme in isolation, which is how the /themes gallery works.
+*/
+
+/* ---- nova: technology, developer tools, SaaS, startups ------------------ */
+:root,
+[data-theme='nova'] {
+  --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-body);
+  --heading-tracking: -0.02em;
+  --radius-card: 0.75rem;
+  --radius-btn: 0.5rem;
+
+  --l-brand: oklch(0.54 0.22 300);
+  --l-brand-strong: oklch(0.46 0.2 300);
+  --l-brand-soft: oklch(0.95 0.03 300);
+  --l-brand-contrast: #fff;
+  --l-surface: #fff;
+  --l-surface-muted: oklch(0.97 0.005 260);
+  --l-ink: oklch(0.21 0.02 260);
+  --l-ink-soft: oklch(0.42 0.02 260);
+  --l-ink-muted: oklch(0.55 0.02 260);
+  --l-line: oklch(0.91 0.01 260);
+  --l-line-strong: oklch(0.82 0.01 260);
+  --l-warn: oklch(0.4 0.1 70);
+  --l-warn-soft: oklch(0.96 0.05 85);
+
+  --d-brand: oklch(0.76 0.17 300);
+  --d-brand-strong: oklch(0.82 0.15 300);
+  --d-brand-soft: oklch(0.3 0.06 300);
+  --d-brand-contrast: oklch(0.15 0.03 300);
+  --d-surface: oklch(0.15 0.02 270);
+  --d-surface-muted: oklch(0.21 0.02 270);
+  --d-ink: oklch(0.92 0.01 270);
+  --d-ink-soft: oklch(0.78 0.015 270);
+  --d-ink-muted: oklch(0.65 0.015 270);
+  --d-line: oklch(0.27 0.02 270);
+  --d-line-strong: oklch(0.36 0.02 270);
+  --d-warn: oklch(0.88 0.1 85);
+  --d-warn-soft: oklch(0.28 0.06 70);
+}
+
+/* ---- atlas: corporate, finance, legal, consulting, B2B ------------------ */
+[data-theme='atlas'] {
+  --font-body: 'Helvetica Neue', Helvetica, Arial, ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-body);
+  --heading-tracking: -0.01em;
+  --radius-card: 0.375rem;
+  --radius-btn: 0.25rem;
+
+  --l-brand: oklch(0.4 0.12 255);
+  --l-brand-strong: oklch(0.32 0.11 255);
+  --l-brand-soft: oklch(0.95 0.02 255);
+  --l-brand-contrast: #fff;
+  --l-surface: #fff;
+  --l-surface-muted: oklch(0.965 0.006 240);
+  --l-ink: oklch(0.2 0.02 255);
+  --l-ink-soft: oklch(0.4 0.02 255);
+  --l-ink-muted: oklch(0.52 0.02 255);
+  --l-line: oklch(0.9 0.01 240);
+  --l-line-strong: oklch(0.8 0.012 240);
+  --l-warn: oklch(0.4 0.1 70);
+  --l-warn-soft: oklch(0.96 0.05 85);
+
+  --d-brand: oklch(0.75 0.11 240);
+  --d-brand-strong: oklch(0.82 0.1 240);
+  --d-brand-soft: oklch(0.29 0.05 250);
+  --d-brand-contrast: oklch(0.15 0.03 250);
+  --d-surface: oklch(0.17 0.02 255);
+  --d-surface-muted: oklch(0.22 0.02 255);
+  --d-ink: oklch(0.93 0.01 240);
+  --d-ink-soft: oklch(0.8 0.01 240);
+  --d-ink-muted: oklch(0.66 0.012 240);
+  --d-line: oklch(0.29 0.02 250);
+  --d-line-strong: oklch(0.38 0.02 250);
+  --d-warn: oklch(0.88 0.1 85);
+  --d-warn-soft: oklch(0.28 0.06 70);
+}
+
+/* ---- paper: editorial, news, magazines, publishing, long-form ------------ */
+[data-theme='paper'] {
+  --font-body: Georgia, 'Iowan Old Style', 'Times New Roman', serif;
+  --font-heading: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --heading-tracking: -0.01em;
+  --radius-card: 0.25rem;
+  --radius-btn: 0.125rem;
+
+  --l-brand: oklch(0.5 0.19 27);
+  --l-brand-strong: oklch(0.42 0.17 27);
+  --l-brand-soft: oklch(0.95 0.03 40);
+  --l-brand-contrast: #fff;
+  --l-surface: oklch(0.985 0.008 85);
+  --l-surface-muted: oklch(0.955 0.012 85);
+  --l-ink: oklch(0.18 0.01 60);
+  --l-ink-soft: oklch(0.36 0.012 60);
+  --l-ink-muted: oklch(0.5 0.012 60);
+  --l-line: oklch(0.88 0.012 80);
+  --l-line-strong: oklch(0.72 0.015 80);
+  --l-warn: oklch(0.4 0.1 70);
+  --l-warn-soft: oklch(0.94 0.05 85);
+
+  --d-brand: oklch(0.76 0.15 30);
+  --d-brand-strong: oklch(0.82 0.13 30);
+  --d-brand-soft: oklch(0.3 0.05 35);
+  --d-brand-contrast: oklch(0.15 0.02 40);
+  --d-surface: oklch(0.2 0.01 60);
+  --d-surface-muted: oklch(0.25 0.012 60);
+  --d-ink: oklch(0.93 0.012 80);
+  --d-ink-soft: oklch(0.8 0.012 80);
+  --d-ink-muted: oklch(0.66 0.012 80);
+  --d-line: oklch(0.31 0.012 60);
+  --d-line-strong: oklch(0.42 0.012 60);
+  --d-warn: oklch(0.88 0.1 85);
+  --d-warn-soft: oklch(0.3 0.06 70);
+}
+
+/* ---- pop: creative agencies, portfolios, events, consumer brands --------- */
+[data-theme='pop'] {
+  --font-body: 'Nunito', ui-rounded, 'SF Pro Rounded', 'Segoe UI', system-ui, sans-serif;
+  --font-heading: var(--font-body);
+  --heading-tracking: -0.03em;
+  --radius-card: 1.25rem;
+  --radius-btn: 9999px;
+
+  --l-brand: oklch(0.66 0.2 30);
+  --l-brand-strong: oklch(0.58 0.2 30);
+  --l-brand-soft: oklch(0.95 0.04 40);
+  --l-brand-contrast: #fff;
+  --l-surface: oklch(0.99 0.01 90);
+  --l-surface-muted: oklch(0.96 0.02 90);
+  --l-ink: oklch(0.22 0.03 290);
+  --l-ink-soft: oklch(0.42 0.03 290);
+  --l-ink-muted: oklch(0.55 0.03 290);
+  --l-line: oklch(0.9 0.02 70);
+  --l-line-strong: oklch(0.8 0.03 70);
+  --l-warn: oklch(0.4 0.1 70);
+  --l-warn-soft: oklch(0.95 0.06 85);
+
+  --d-brand: oklch(0.76 0.17 35);
+  --d-brand-strong: oklch(0.82 0.15 35);
+  --d-brand-soft: oklch(0.32 0.06 35);
+  --d-brand-contrast: oklch(0.16 0.03 35);
+  --d-surface: oklch(0.19 0.03 290);
+  --d-surface-muted: oklch(0.25 0.03 290);
+  --d-ink: oklch(0.95 0.01 90);
+  --d-ink-soft: oklch(0.82 0.012 90);
+  --d-ink-muted: oklch(0.68 0.015 90);
+  --d-line: oklch(0.32 0.03 290);
+  --d-line-strong: oklch(0.42 0.03 290);
+  --d-warn: oklch(0.88 0.1 85);
+  --d-warn-soft: oklch(0.3 0.06 70);
+}
+
+/* ---- fern: health, wellness, food, sustainability, education ------------- */
+[data-theme='fern'] {
+  --font-body: 'Avenir Next', 'Segoe UI', 'Trebuchet MS', ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-body);
+  --heading-tracking: -0.015em;
+  --radius-card: 1rem;
+  --radius-btn: 0.75rem;
+
+  --l-brand: oklch(0.52 0.13 155);
+  --l-brand-strong: oklch(0.44 0.12 155);
+  --l-brand-soft: oklch(0.95 0.035 150);
+  --l-brand-contrast: #fff;
+  --l-surface: oklch(0.99 0.006 120);
+  --l-surface-muted: oklch(0.96 0.012 120);
+  --l-ink: oklch(0.22 0.02 160);
+  --l-ink-soft: oklch(0.4 0.02 160);
+  --l-ink-muted: oklch(0.53 0.02 160);
+  --l-line: oklch(0.9 0.015 130);
+  --l-line-strong: oklch(0.8 0.02 130);
+  --l-warn: oklch(0.4 0.1 70);
+  --l-warn-soft: oklch(0.95 0.05 85);
+
+  --d-brand: oklch(0.8 0.14 150);
+  --d-brand-strong: oklch(0.86 0.12 150);
+  --d-brand-soft: oklch(0.3 0.05 155);
+  --d-brand-contrast: oklch(0.16 0.03 155);
+  --d-surface: oklch(0.18 0.015 160);
+  --d-surface-muted: oklch(0.23 0.018 160);
+  --d-ink: oklch(0.94 0.01 130);
+  --d-ink-soft: oklch(0.8 0.012 130);
+  --d-ink-muted: oklch(0.66 0.015 130);
+  --d-line: oklch(0.3 0.018 160);
+  --d-line-strong: oklch(0.4 0.02 160);
+  --d-warn: oklch(0.88 0.1 85);
+  --d-warn-soft: oklch(0.3 0.06 70);
+}
+
+/* ---- mode resolution ----------------------------------------------------
+   `[data-theme]` is listed next to :root so an element that previews a theme
+   re-resolves the live variables from its own light and dark values.       */
+:root,
+[data-theme] {
+  color-scheme: light;
+  --brand: var(--l-brand);
+  --brand-strong: var(--l-brand-strong);
+  --brand-soft: var(--l-brand-soft);
+  --brand-contrast: var(--l-brand-contrast);
+  --surface: var(--l-surface);
+  --surface-muted: var(--l-surface-muted);
+  --ink: var(--l-ink);
+  --ink-soft: var(--l-ink-soft);
+  --ink-muted: var(--l-ink-muted);
+  --line: var(--l-line);
+  --line-strong: var(--l-line-strong);
+  --warn: var(--l-warn);
+  --warn-soft: var(--l-warn-soft);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mode='light']),
+  :root:not([data-mode='light']) [data-theme] {
+    color-scheme: dark;
+    --brand: var(--d-brand);
+    --brand-strong: var(--d-brand-strong);
+    --brand-soft: var(--d-brand-soft);
+    --brand-contrast: var(--d-brand-contrast);
+    --surface: var(--d-surface);
+    --surface-muted: var(--d-surface-muted);
+    --ink: var(--d-ink);
+    --ink-soft: var(--d-ink-soft);
+    --ink-muted: var(--d-ink-muted);
+    --line: var(--d-line);
+    --line-strong: var(--d-line-strong);
+    --warn: var(--d-warn);
+    --warn-soft: var(--d-warn-soft);
+  }
+}
+
+[data-mode='dark'],
+[data-mode='dark'] [data-theme] {
+  color-scheme: dark;
+  --brand: var(--d-brand);
+  --brand-strong: var(--d-brand-strong);
+  --brand-soft: var(--d-brand-soft);
+  --brand-contrast: var(--d-brand-contrast);
+  --surface: var(--d-surface);
+  --surface-muted: var(--d-surface-muted);
+  --ink: var(--d-ink);
+  --ink-soft: var(--d-ink-soft);
+  --ink-muted: var(--d-ink-muted);
+  --line: var(--d-line);
+  --line-strong: var(--d-line-strong);
+  --warn: var(--d-warn);
+  --warn-soft: var(--d-warn-soft);
+}

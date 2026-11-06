@@ -13,7 +13,7 @@ const stack = [
 ---
 
 <Layout title="About" description="What this site is and how it is built.">
-  <article class="prose prose-slate max-w-3xl dark:prose-invert prose-a:text-brand-600 dark:prose-a:text-brand-400">
+  <article class="prose max-w-3xl">
     <h1>About this site</h1>
     <p>
       Astro Field Notes is a reference project that accompanies the article
@@ -32,6 +32,7 @@ const stack = [
       <li><code>src/pages/blog/[id].astro</code> turns each post into a static page.</li>
       <li><code>src/components/PostSearch.tsx</code> is the only component that runs in the browser.</li>
       <li><code>src/lib/wordpress.ts</code> talks to the WordPress REST API.</li>
+      <li><code>src/styles/themes.css</code> and <code>src/lib/themes.ts</code> define the five themes.</li>
       <li><code>.github/workflows/deploy.yml</code>, <code>netlify.toml</code>, <code>vercel.json</code> and <code>wrangler.jsonc</code> cover deployment.</li>
     </ul>
     <p>The source is on <a href="https://github.com/fareezahmed/astro-blog">GitHub</a>.</p>

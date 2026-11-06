@@ -6,6 +6,10 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      theme:
+        description: 'Theme to build with (nova, atlas, paper, pop, fern)'
+        default: nova
 
 permissions:
   contents: read
@@ -32,6 +36,7 @@ jobs:
           SITE_URL: https://${{ github.repository_owner }}.github.io
           BASE_PATH: /${{ github.event.repository.name }}
           WP_API_URL: https://public-api.wordpress.com/wp/v2/sites/en.blog.wordpress.com
+          SITE_THEME: ${{ inputs.theme || 'nova' }}
 
   deploy:
     needs: build

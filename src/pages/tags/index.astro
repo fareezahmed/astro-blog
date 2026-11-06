@@ -8,12 +8,12 @@ const tags = getTagCounts(posts);
 ---
 
 <Layout title="Tags" description="Browse posts by tag.">
-  <h1 class="text-3xl font-bold tracking-tight">Tags</h1>
+  <h1 class="text-3xl font-bold">Tags</h1>
   <ul class="mt-6 flex flex-wrap gap-3">
     {tags.map(([tag, count]) => (
       <li>
-        <a href={url(`/tags/${tag}`)} class="inline-flex items-center gap-2 rounded-full border border-slate-200 px-4 py-1.5 text-sm hover:border-brand-400 dark:border-slate-800">
-          #{tag} <span class="rounded-full bg-slate-100 px-2 text-xs dark:bg-slate-800">{count}</span>
+        <a href={url(`/tags/${tag}`)} class="inline-flex items-center gap-2 rounded-full border border-line px-4 py-1.5 text-sm hover:border-brand">
+          #{tag} <span class="rounded-full bg-surface-muted px-2 text-xs">{count}</span>
         </a>
       </li>
     ))}

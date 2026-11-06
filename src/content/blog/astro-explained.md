@@ -3,7 +3,7 @@ title: "Astro explained: the web framework for content-driven websites"
 description: "What Astro is, how islands and content collections work, what changed in Astro 7, and a walkthrough of a real blog built with it."
 pubDate: 2026-11-06
 tags: [astro, architecture, performance, tutorial]
-featured: true
+featured: false
 ---
 
 Most websites are documents. Blogs, marketing pages, documentation, portfolios, news, e-commerce catalogues: the visitor arrives, reads, maybe clicks a button, and leaves. For a decade the industry built those documents with tools designed for applications, and visitors paid for it in megabytes of JavaScript they never needed.

@@ -11,34 +11,34 @@ const builtAt = new Date();
 ---
 
 <Layout title="Headless WordPress" description="Posts fetched from a WordPress REST API at build time and rendered by Astro as static pages.">
-  <h1 class="text-3xl font-bold tracking-tight">Headless WordPress</h1>
-  <p class="mt-2 max-w-3xl text-slate-600 dark:text-slate-300">
+  <h1 class="text-3xl font-bold">Headless WordPress</h1>
+  <p class="mt-2 max-w-3xl text-ink-soft">
     These posts come from <a class="underline" href={WP_SOURCE}>{WP_SOURCE}</a> over the WordPress REST API.
     Astro requested them once, when this site was built, and wrote static HTML. Editors keep using the
     WordPress admin; visitors never touch PHP or MySQL. Change <code>WP_API_URL</code> to point at your own site.
   </p>
-  <p class="mt-2 text-xs text-slate-500">Snapshot taken at build time: {builtAt.toUTCString()}</p>
+  <p class="mt-2 text-xs text-ink-muted">Snapshot taken at build time: {builtAt.toUTCString()}</p>
 
   {posts.length === 0 ? (
-    <p class="mt-10 rounded-lg bg-amber-50 p-6 text-sm text-amber-900 dark:bg-amber-950 dark:text-amber-200">
+    <p class="mt-10 rounded-btn bg-warn-soft p-6 text-sm text-warn">
       The WordPress API was unreachable during this build, so there is nothing to show. The build still
       succeeded, which is the point: an offline CMS should degrade, not take the site down.
     </p>
   ) : (
     <ul class="mt-10 grid gap-5 sm:grid-cols-2">
       {posts.map((post) => (
-        <li class="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800">
+        <li class="overflow-hidden rounded-card border border-line">
           {post.featuredImage && (
             <img src={post.featuredImage.src} alt={post.featuredImage.alt} width={post.featuredImage.width} height={post.featuredImage.height} loading="lazy" class="aspect-[2/1] w-full object-cover" />
           )}
           <div class="p-5">
-            <p class="text-xs text-slate-500 dark:text-slate-400">
+            <p class="text-xs text-ink-muted">
               {formatDate(post.date)}{post.author && ` · ${post.author}`}
             </p>
             <h2 class="mt-1 text-lg font-semibold leading-snug">
-              <a href={url(`/wordpress/${post.slug}`)} class="hover:text-brand-600 dark:hover:text-brand-400" set:html={post.title} />
+              <a href={url(`/wordpress/${post.slug}`)} class="hover:text-brand" set:html={post.title} />
             </h2>
-            <div class="prose prose-sm prose-slate mt-2 max-w-none dark:prose-invert" set:html={post.excerpt} />
+            <div class="prose prose-sm mt-2 max-w-none" set:html={post.excerpt} />
           </div>
         </li>
       ))}

@@ -20,9 +20,9 @@ const { posts } = Astro.props;
 ---
 
 <Layout title={`#${tag}`} description={`Posts tagged ${tag}.`}>
-  <p class="text-sm"><a href={url('/tags')} class="text-brand-600 hover:underline dark:text-brand-400">← All tags</a></p>
-  <h1 class="mt-2 text-3xl font-bold tracking-tight">#{tag}</h1>
-  <p class="mt-1 mb-8 text-slate-500">{posts.length} {posts.length === 1 ? 'post' : 'posts'}</p>
+  <p class="text-sm"><a href={url('/tags')} class="text-brand hover:underline">← All tags</a></p>
+  <h1 class="mt-2 text-3xl font-bold">#{tag}</h1>
+  <p class="mt-1 mb-8 text-ink-muted">{posts.length} {posts.length === 1 ? 'post' : 'posts'}</p>
   <div class="grid gap-4 sm:grid-cols-2">
     {posts.map((post) => <PostCard post={post} />)}
   </div>

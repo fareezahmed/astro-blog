@@ -1,0 +1,78 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { themes, defaultTheme } from '../lib/themes';
+import { url } from '../lib/url';
+---
+
+<Layout title="Themes" description="Five themes for different kinds of sites, previewed side by side. Pick one per deployment with SITE_THEME.">
+  <h1 class="text-3xl font-bold">Themes</h1>
+  <p class="mt-2 max-w-3xl text-ink-soft">
+    The same code base, five looks. Each card below renders with its own theme so you can compare them in place.
+    Apply one to the whole site with the button, or bake it into a deployment with
+    <code class="rounded-btn bg-surface-muted px-1.5 py-0.5 text-sm">SITE_THEME=&lt;id&gt;</code>.
+    This deployment was built with <strong>{defaultTheme}</strong>.
+  </p>
+
+  <ul class="mt-10 grid gap-6 lg:grid-cols-2">
+    {themes.map((t) => (
+      <li data-theme={t.id} class="overflow-hidden rounded-card border border-line bg-surface text-ink shadow-sm">
+        <div class="border-b border-line bg-surface-muted px-5 py-3">
+          <div class="flex items-center justify-between gap-3">
+            <p class="font-semibold">{t.name} <span class="ml-1 font-mono text-xs text-ink-muted">{t.id}</span></p>
+            <div class="flex gap-1" aria-hidden="true">
+              <span class="h-5 w-5 rounded-full bg-brand" title="brand"></span>
+              <span class="h-5 w-5 rounded-full bg-brand-soft" title="brand-soft"></span>
+              <span class="h-5 w-5 rounded-full border border-line bg-surface" title="surface"></span>
+              <span class="h-5 w-5 rounded-full bg-ink" title="ink"></span>
+            </div>
+          </div>
+        </div>
+        <div class="p-5">
+          <p class="text-xs font-medium uppercase tracking-wider text-brand">{t.tagline}</p>
+          <h2 class="mt-1 text-2xl font-bold">The quick brown fox jumps over the lazy dog</h2>
+          <p class="mt-2 text-sm text-ink-soft">{t.description}</p>
+          <div class="mt-4 flex flex-wrap gap-2">
+            {t.domains.map((d) => (
+              <span class="rounded-full bg-surface-muted px-2.5 py-0.5 text-xs">{d}</span>
+            ))}
+          </div>
+          <div class="mt-5 flex flex-wrap items-center gap-3">
+            <button type="button" data-apply-theme={t.id} class="rounded-btn bg-brand px-4 py-2 text-sm font-medium text-brand-contrast hover:bg-brand-strong">
+              Apply {t.name} to this site
+            </button>
+            <a href={url('/blog/theming-for-different-domains')} class="text-sm text-brand hover:underline">How it works →</a>
+          </div>
+        </div>
+      </li>
+    ))}
+  </ul>
+
+  <section class="prose mt-14 max-w-3xl">
+    <h2>Setting a theme per deployment</h2>
+    <p>
+      Add <code>SITE_THEME</code> to the host's environment variables, or to <code>.env</code> locally, and rebuild.
+      The GitHub Pages workflow in this repository exposes it as an input so one repository can serve several
+      brands or clients from separate deployments.
+    </p>
+    <pre><code>SITE_THEME=paper npm run build</code></pre>
+    <p>
+      Visual values live in <code>src/styles/themes.css</code>; names and descriptions in <code>src/lib/themes.ts</code>.
+      Adding a theme means adding one block to each.
+    </p>
+  </section>
+</Layout>
+
+<script>
+  // Plain page script, bundled by Astro. Applies a theme to <html>, stores
+  // it, and tells the ThemePicker island so its <select> stays in sync.
+  document.querySelectorAll<HTMLButtonElement>('[data-apply-theme]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const id = button.dataset.applyTheme!;
+      document.documentElement.dataset.theme = id;
+      try {
+        localStorage.setItem('theme', id);
+      } catch {}
+      window.dispatchEvent(new CustomEvent('themechange', { detail: id }));
+    });
+  });
+</script>

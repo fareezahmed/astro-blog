@@ -3,6 +3,7 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { url } from '../lib/url';
+import { defaultTheme } from '../lib/themes';
 
 interface Props {
   title: string;
@@ -20,11 +21,20 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!doctype html>
-<html lang="en" class="h-full">
+<html lang="en" class="h-full" data-theme={defaultTheme}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
+    <script is:inline>
+      // Re-apply the visitor's saved theme and color mode before first paint.
+      try {
+        var t = localStorage.getItem('theme');
+        if (t) document.documentElement.dataset.theme = t;
+        var m = localStorage.getItem('mode');
+        if (m === 'light' || m === 'dark') document.documentElement.dataset.mode = m;
+      } catch (e) {}
+    </script>
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />

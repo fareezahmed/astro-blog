@@ -1,26 +1,78 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+@import "./themes.css";
 
-@theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+/*
+  Semantic design tokens. `@theme inline` makes Tailwind utilities reference
+  the CSS variables directly, so `bg-brand` follows whichever theme and color
+  mode is active at runtime. Themes define the variables in themes.css.
+*/
+@theme inline {
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-contrast: var(--brand-contrast);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-muted: var(--ink-muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+
+  --font-sans: var(--font-body);
+  --font-display: var(--font-heading);
   --font-mono: ui-monospace, "SFMono-Regular", Menlo, monospace;
-  --color-brand-50: oklch(0.97 0.02 300);
-  --color-brand-100: oklch(0.93 0.05 300);
-  --color-brand-400: oklch(0.72 0.19 300);
-  --color-brand-500: oklch(0.62 0.22 300);
-  --color-brand-600: oklch(0.54 0.22 300);
-  --color-brand-700: oklch(0.46 0.2 300);
+
+  --radius-card: var(--radius-card);
+  --radius-btn: var(--radius-btn);
 }
 
-html {
-  scroll-behavior: smooth;
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--surface);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-heading);
+    letter-spacing: var(--heading-tracking);
+  }
 }
 
-body {
-  @apply bg-white text-slate-800 antialiased dark:bg-slate-950 dark:text-slate-200;
+/* Markdown bodies are rendered with Tailwind Typography; map its palette to
+   the theme tokens so prose follows the theme and color mode too. */
+.prose {
+  --tw-prose-body: var(--ink-soft);
+  --tw-prose-headings: var(--ink);
+  --tw-prose-lead: var(--ink-soft);
+  --tw-prose-links: var(--brand);
+  --tw-prose-bold: var(--ink);
+  --tw-prose-counters: var(--ink-muted);
+  --tw-prose-bullets: var(--line-strong);
+  --tw-prose-hr: var(--line);
+  --tw-prose-quotes: var(--ink);
+  --tw-prose-quote-borders: var(--line-strong);
+  --tw-prose-captions: var(--ink-muted);
+  --tw-prose-code: var(--ink);
+  --tw-prose-th-borders: var(--line-strong);
+  --tw-prose-td-borders: var(--line);
 }
 
-/* Markdown bodies are rendered with Tailwind Typography. */
+/* Typography wraps inline code in backticks by default; the styling is enough. */
+.prose :where(code):not(:where(pre *))::before,
+.prose :where(code):not(:where(pre *))::after {
+  content: none;
+}
+
 .prose pre {
-  @apply rounded-lg text-sm;
+  border-radius: var(--radius-card);
+  font-size: 0.875rem;
 }
